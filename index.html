@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Sentence Info - by @nainemom</title>
+	<link rel="stylesheet" href="https://bootswatch.com/lumen/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.2.0-rc2/css/bootstrap-rtl.min.css">
+	<link href="https://cdn.rawgit.com/rastikerdar/vazir-font/v2.0.0/dist/font-face.css" rel="stylesheet"/>
+	<style>
+		html, body{
+			font-family: 'Vazir';
+		}
+		.content{
+			background: #fff;
+		}
+		#nai-letters{
+			word-break: break-all;
+			text-align: center;
+		}
+		#nai-letters .letter{
+			display: inline-block;
+			width: 38px;
+			height: 38px;
+			margin: 4px;
+			text-align: center;
+			cursor: default;
+		}
+		#nai-letters .letter.exist{
+
+			font-weight: bold;
+		}
+		#nai-ss{
+			vertical-align: middle;
+		}
+		footer.panel-footer{
+			padding: 0 15px;
+			line-height: 3;
+		}
+	</style>
+</head>
+<body dir="rtl">
+	<nav class="navbar navbar-default">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="http://nainemom.github.io/sentence-info/"><span class="glyphicon glyphicon-text-background logo"></span> اطلاعات جمله - Sentence Info</a>
+		</div>
+
+
+		<ul class="nav navbar-nav navbar-left">
+			<li><a href="https://github.com/nainemom/sentence-info"><span class="glyphicon glyphicon-link"></span> صفحه گیتهاب</a></li>
+		</ul>
+
+
+	</nav>
+	<div class="col-xs-12 content">
+		<div class="form-group">
+			<label class="control-label">متن:</label>
+			<textarea class="form-control" id="textbox"></textarea>
+		</div>
+		<div class="form-group">
+			<label class="control-label">سخت‌گیری:</label>
+			<select class="form-control" id="setting">
+				<option value="3">زیاد</option>
+				<option value="2">متوسط</option>
+				<option value="1">کم</option>
+			</select>
+		</div>
+		<hr>
+		<div class="progress progress-striped">
+			<div class="progress-bar progress-bar-success" id="percetange" style="width: 0%"></div>
+		</div>
+		<div class="form-group">
+			<label class="control-label"> جدول خروجی: </label>
+			<div class="" id="nai-letters">A B C D</div>
+		</div>
+		<hr>
+		<div>
+			<table id="info" class="table table-striped table-hover ">
+				<tr>
+					<td>تعداد کاراکترها</td>
+					<td id="length"></td>
+				</tr>
+				<tr>
+					<td>تعداد کلمه‌ها</td>
+					<td id="words-length"></td>
+				</tr>
+				<tr>
+					<td>تعداد حروف</td>
+					<td id="letters-length"></td>
+				</tr>
+				<tr>
+					<td>تعداد نقطه‌ها</td>
+					<td id="dots-length"></td>
+				</tr>
+				<tr>
+					<td>تعداد فاصله‌ها</td>
+					<td id="spaces-length"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+
+	<footer class="panel-footer">
+	ایجاد شده توسط امیر مومنیان: <a href="https://twitter.com/nainemom">توییتر</a>، <a href="https://github.com/nainemom/sentence-info">گیت‌هاب</a>، <a href="http://morde.ir">وبلاگ</a>			
+	</footer>
+	
+	<script src="sentence-info.js"></script>
+	<script>
+		var elems = {
+			textbox: document.getElementById('textbox'),
+			naiLetters: document.getElementById('nai-letters'),
+			setting: document.getElementById('setting'),
+			percetange: document.getElementById('percetange')
+		};
+		var textbox = document.getElementById('textbox');
+		var sentence = new NaiSentence( textbox.value );
+		var allLetters_lv = [
+			new NaiSentence('').missedLetters(),
+			new NaiSentence('').missedLetters(true,true,true),
+			new NaiSentence('').missedLetters(true)
+		];
+		
+		var applyChanges = function(){
+			sentence.val = elems.textbox.value;
+			elems.naiLetters.innerHTML = '';
+			var allLetters_ = allLetters_lv[parseInt(elems.setting.value)-1];
+			var missedLetters = [];
+			var naiLetters = [];
+			switch( parseInt(elems.setting.value) ){
+				case 1:
+					missedLetters = sentence.missedLetters();
+					break;
+				case 2:
+					missedLetters = sentence.missedLetters(true,true,true);
+					break;
+				case 3:
+					missedLetters = sentence.missedLetters(true);
+					break;				
+			}	
+			var numAll = allLetters_.length;
+			var numUsed = numAll - missedLetters.length;
+			elems.percetange.style.width = ((100 / numAll) * numUsed) + '%';
+
+			for( var i = 0; i < allLetters_.length; i++ ){
+				naiLetters.push({
+					letter: allLetters_[i],
+					missed: false 			
+				});
+			}	
+			var i, j, f, span;
+			for( i = 0; i < naiLetters.length; i++ ){
+				f = false;
+				for( j = 0; j < missedLetters.length; j++ ){
+					if( missedLetters[j] == naiLetters[i].letter ){
+						f = true;						
+						break;
+					}
+				}
+				naiLetters[i].missed = f;
+				span = document.createElement('span');
+				span.classList.add('btn');
+				//span.classList.add('disabled');
+				span.classList.add('letter');
+				span.innerHTML = naiLetters[i].letter;
+				if( !naiLetters[i].missed ){
+					span.classList.add('btn-success');
+				}
+				else{
+					span.classList.add('btn-default');
+				}
+				elems.naiLetters.appendChild( span );
+
+			}
+
+			document.getElementById('length').innerHTML 					= sentence.charactersLength();
+			document.getElementById('letters-length').innerHTML 			= sentence.lettersLength();
+			document.getElementById('words-length').innerHTML 				= sentence.wordsLength();
+			document.getElementById('dots-length').innerHTML 				= sentence.dotsLength();
+			document.getElementById('spaces-length').innerHTML 				= sentence.spacesLength();
+
+			
+		}
+		elems.textbox.onkeyup = applyChanges;
+		elems.setting.onchange = applyChanges;
+		elems.textbox.onkeyup();
+	</script>
+</body>
+</html>
