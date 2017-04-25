@@ -1,8 +1,3 @@
-/*
-	NaiSentence Library by Nainemom: nainemom@gmail.com
-	http://nainemom.github.io/nai-sentence	
-*/
-
 function NaiSentence( val ){
 	var self = this;
 	

@@ -1,4 +1,3 @@
-# Sentence Info
-Sentence Info Library by Nainemom: nainemom@gmail.com
+# Persian Glyph Visualizer
 
-demo: http://nainemom.github.io/sentence-info
+Live Demo: https://parsa.github.io/fa-glyph-visualizer/o
